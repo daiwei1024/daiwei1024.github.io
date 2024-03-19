@@ -2,12 +2,13 @@
 layout:     post
 title:      Swift编程：第一课 概述
 subtitle:   
-date:       2017-01-06
-author:     BY
+date:       2024-03-19
+author:     daiwei
 header-img: img/post-bg-ios9-web.jpg
 catalog: true
 tags:
     - swift
+    - iOS
 ---
 # 前言
 
@@ -202,6 +203,10 @@ swift的枚举功能异常强大
 enum ServerResponse {
     case result(String, String)
     case failure(String)
+
+    func sayHello() -> void{
+        
+    }
 }
 
 
@@ -217,3 +222,5 @@ case let .failure(message):
 }
 // Prints "Sunrise is at 6:00 am and sunset is at 8:09 pm."
 ```
+
+swift中结构体与class的一个重要因素是引用类型与值类型的区别
