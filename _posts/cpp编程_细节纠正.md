@@ -18,21 +18,91 @@ string str = "aaa";
 const string& str2 = str;
 auto str3 = str2;
 ```
-在上面的代码中,第三行会触发拷贝构造。那么我们为什么会经常使用auto呢？因为在使用智能指针时,auto并不会引起拷贝构造,因为赋值的右边往往是一个指针,这种情况不需要使用 auto& 来接收。然而我们要时刻谨记,cpp中的对象都是值类型,包括指针,类等。当我们直接进行赋值时都会执行拷贝,使用指针时拷贝的是指针的值。
+在上面的代码中,第三行会触发拷贝构造，auto推断不会传递引用，此时auto被推断为string。那么我们为什么会经常使用auto呢？因为在使用智能指针时,auto并不会引起拷贝构造,赋值的右边往往是一个指针,这种情况不需要使用 auto& 来接收。然而我们要时刻谨记,cpp中的对象都是值类型,包括指针,类等。当我们直接进行赋值时都会执行拷贝,使用指针时拷贝的是指针的值。
 那么怎么优化上面的代码呢？
 ```cpp
 auto& str3 = str2;
 //等效于
 string& str3 = str2;
 ```
+优秀的swift语言就不存在上述问题：考虑下面swift代码
+```swift
+//swift的array为值类型，赋值会拷贝
+var arr = [1, 2, 3]
+withUnsafePointer(to: &arr) { arr in
+    print(arr)
+    //0x0000000100edc030
+}
+//下面函数不会引起拷贝，地址不变
+func printArr0(array: inout [Int]){
+    print(array[0]) 
+}
+
+//下面函数不会引起拷贝，传入的是引用
+func printArr0Add(array: inout [Int]){
+    array[0] = 3
+    print(array[0])
+    withUnsafePointer(to: &array) { arr in
+        print(arr)
+        //0x0000000100edc030
+    }
+}
+printArr0Add(array: &arr)
+
+//只有下面情况会引起拷贝
+var arr2 = arr
+arr2[0] = 0
+
+withUnsafePointer(to: &arr2) { arr in
+    print(arr)
+    //0x0000000100edc038
+}
+```
 
 ## 触发拷贝的情况
 1. 赋值运算符
-2. 作为参数
-3. 作为返回参数的时候
+2. 作为参数（swift不会，要么是常量，要么是引用）
+3. 作为返回参数的时候（swift一定会拷贝）
+
+第3点的swift测试代码
+```swift
+var arr = [0, 1]
+//0x000000010e128030
+
+func addArr(arr: inout [Int]) -> [Int]{
+    withUnsafePointer(to: &arr){pointer in
+        print(pointer)
+    }
+    arr[1] = 2
+    withUnsafePointer(to: &arr){pointer in
+        print(pointer)
+        //地址不变
+    }
+    return arr
+}
+func createArr() -> [Int]{
+    var a = [1, 2]
+    withUnsafePointer(to: &a){pointer in
+        print(pointer)
+    }
+    return a
+}
+var arr2 = addArr(arr: &arr)
+withUnsafePointer(to: &arr2){pointer in
+    print(pointer)
+}
+print("====")
+var arr3 = createArr()
+//接收函数参数后地址发生变化
+withUnsafePointer(to: &arr2){pointer in
+    print(pointer)
+    //0x000000010e128038
+}
+
+``````
 
 ## 解决拷贝的方案
-1. 引用
+1. 引用（swift中的唯一方案：引用类型或者是inout声明）
 2. 指针
 3. 移动语义
 

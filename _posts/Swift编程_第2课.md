@@ -1,8 +1,8 @@
 ---
 layout:     post
-title:      Swift编程：第一课 概述
+title:      Swift编程：第二课 基础
 subtitle:   
-date:       2024-03-19
+date:       2024-03-23
 author:     daiwei
 header-img: img/post-bg-ios9-web.jpg
 catalog: true
@@ -12,7 +12,7 @@ tags:
 ---
 # 前言
 
->最近工作都在围绕 VisionOS 展开，准备系统性的学习一下 Swift 及 SwiftUI，记录自己的学习过程，并分享给各位亦菲和彦祖。后续还会出 Swift 源码分析文章，尽请期待
+>好几天没有继续学习swift了，今天继续！
 
 # 基本类型
 基本类型这部分太简单了，浅浅浏览一遍
